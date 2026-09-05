@@ -1,14 +1,133 @@
-<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>TrainFlow | الصفحة الرئيسية</title><link rel="stylesheet" href="index.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></head><body><div class="bg"><div class="blob b1"></div><div class="blob b2"></div></div><div class="container"><header class="topbar"><div class="brand"><div class="brand-icon"><i class="fa-solid fa-user-graduate"></i></div><div><h1>TrainFlow</h1><small>Training Management System</small></div></div><nav class="nav"><a href="#about">عن النظام</a><a href="#features">المميزات</a><a href="login.html">تسجيل الدخول</a><a class="btn" href="register.html">ابدأ الآن</a></nav></header><main><section class="hero"><div><span class="pill"><i class="fa-solid fa-sparkles"></i>إدارة ومتابعة التدريب</span><h2>نظّم التدريب وتابع الإنجاز <span>بوضوح</span></h2><p>TrainFlow يربط المشرف بمتدربيه من خلال كود خاص لكل مشرف، ويضمن أن كل متدرب يرى مهامه وتقاريره فقط. المشرف يضيف المهام والملاحظات، والمتدرب يحدّث الإنجاز ويرسل تقريره اليومي.</p><div style="display:flex;gap:10px;margin-top:22px;flex-wrap:wrap"><a class="btn" href="register.html">إنشاء حساب <i class="fa-solid fa-arrow-left"></i></a><a class="ghost-btn" href="login.html">تسجيل الدخول</a></div></div><div class="card"><div class="section-title"><span>طريقة العمل</span><h2>بدون بيانات تجريبية</h2><p>تظهر البيانات فقط بعد إنشاء الحسابات وإضافة المهام فعليًا.</p></div><div class="flow-grid"><div class="flow-step"><i class="fa-solid fa-user-tie"></i><div><h3>المشرف ينشئ حسابه</h3><p>يستخدم كود المشرف المعتمد ثم يحصل على كود ربط خاص به.</p></div></div><div class="flow-step"><i class="fa-solid fa-link"></i><div><h3>المتدرب يرتبط بالمشرف</h3><p>يدخل كود الربط الخاص بالمشرف وقت إنشاء حسابه.</p></div></div><div class="flow-step"><i class="fa-solid fa-list-check"></i><div><h3>مهام وتقارير خاصة</h3><p>كل متدرب يشاهد مهامه فقط، ويكتب تقريره اليومي للمشرف.</p></div></div></div></div></section><section id="about" class="card"><div class="section-title"><span>عن النظام</span><h2>متابعة تدريب عملية ومنظمة</h2><p>إدارة المتدربين والمهام والملاحظات والتقارير اليومية من مكان واحد.</p></div></section><section id="features" class="feature-grid"><div class="card"><h3>خصوصية المتدربين</h3><p class="muted">تُعرض المهام حسب الحساب المرتبط بالمشرف.</p></div><div class="card"><h3>إنهاء المهمة بعلامة صح</h3><p class="muted">المتدرب يستطيع تعليم المهمة كمكتملة وإضافة ملاحظة.</p></div><div class="card"><h3>تقرير يومي</h3><p class="muted">تقرير واحد لكل يوم يمكن تحديثه ومراجعته من المشرف.</p></div></section></main><footer class="footer">TrainFlow</footer></div><script>
-const TF={
- get(k,f=[]){try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}},
- set(k,v){localStorage.setItem(k,JSON.stringify(v))},
- users(){return this.get('tf_users',[])}, tasks(){return this.get('tf_tasks',[])}, reports(){return this.get('tf_reports',[])}, invites(){return this.get('tf_invites',[])},
- session(){const id=localStorage.getItem('tf_session');return this.users().find(u=>u.id===id)||null},
- id(p='id'){return p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7)},
- esc(s=''){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))},
- date(s){if(!s)return '-';return new Date(s+'T00:00:00').toLocaleDateString('ar-SA',{year:'numeric',month:'long',day:'numeric'})},
- logout(){localStorage.removeItem('tf_session');location.href='login.html'},
- require(role){const u=this.session();if(!u){location.href='login.html';return null}if(role&&u.role!==role){location.href=u.role==='supervisor'?'supervisor-dashboard.html':'trainee-dashboard.html';return null}return u}
-};
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 
-</script></body></html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TrainFlow | متابعة التدريب</title>
+
+    <link rel="stylesheet" href="index.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    >
+</head>
+
+<body>
+
+    <header class="topbar">
+
+        <a href="index.html" class="brand">
+            <div class="brand-icon">
+                <i class="fa-solid fa-layer-group"></i>
+            </div>
+
+            <div>
+                <strong>TrainFlow</strong>
+                <span>متابعة التدريب</span>
+            </div>
+        </a>
+
+        <nav>
+            <a href="login.html" class="login-link">
+                تسجيل الدخول
+            </a>
+
+            <a href="register.html" class="primary-button">
+                إنشاء حساب مشرف
+            </a>
+        </nav>
+
+    </header>
+
+
+    <main class="hero">
+
+        <section class="hero-content">
+
+            <span class="badge">
+                نظام إدارة ومتابعة التدريب
+            </span>
+
+            <h1>
+                متابعة التدريب
+                <span>بشكل أبسط وأوضح</span>
+            </h1>
+
+            <p>
+                منصة تساعد المشرف على إدارة المتدربين
+                وتوزيع المهام ومتابعة الإنجاز والتقارير اليومية.
+            </p>
+
+
+            <div class="hero-actions">
+
+                <a href="login.html" class="primary-button large">
+                    تسجيل الدخول
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+
+                <a href="register.html" class="secondary-button large">
+                    تسجيل مشرف جديد
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <section class="features">
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+
+                <h3>إدارة المتدربين</h3>
+
+                <p>
+                    إضافة المتدربين وربط كل متدرب بالمشرف المسؤول عنه.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    <i class="fa-solid fa-list-check"></i>
+                </div>
+
+                <h3>متابعة المهام</h3>
+
+                <p>
+                    إنشاء المهام ومتابعة حالتها وإنجازها.
+                </p>
+
+            </div>
+
+
+            <div class="feature-card">
+
+                <div class="feature-icon">
+                    <i class="fa-solid fa-file-lines"></i>
+                </div>
+
+                <h3>التقارير اليومية</h3>
+
+                <p>
+                    يرسل المتدرب تقريره اليومي للمشرف مباشرة.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>
