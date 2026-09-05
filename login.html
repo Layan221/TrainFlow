@@ -1,14 +1,388 @@
-<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>TrainFlow | تسجيل الدخول</title><link rel="stylesheet" href="login.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></head><body><div class="bg"><div class="blob b1"></div><div class="blob b2"></div></div><main class="container auth"><section class="auth-side"><div class="brand"><div class="brand-icon"><i class="fa-solid fa-user-graduate"></i></div><div><h1>TrainFlow</h1><small>Training Management System</small></div></div><h2>أهلاً بعودتك</h2><p>سجل دخولك للوصول إلى بياناتك الفعلية فقط.</p></section><section class="card auth-card"><a class="ghost-btn" href="index.html"><i class="fa-solid fa-house"></i> الرئيسية</a><div class="section-title" style="margin-top:18px"><span>تسجيل الدخول</span><h2>أدخل بيانات حسابك</h2></div><div class="role-tabs"><button id="traineeBtn" class="role-btn active" type="button">متدرب</button><button id="supervisorBtn" class="role-btn" type="button">مشرف</button></div><form id="form"><div class="form-group"><label>البريد الإلكتروني</label><input class="input" id="email" type="email" required></div><div class="form-group"><label>كلمة المرور</label><input class="input" id="password" type="password" required></div><div id="msg" class="message"></div><button class="btn" style="width:100%" type="submit">تسجيل الدخول</button></form><p class="muted" style="margin-top:14px;text-align:center">ليس لديك حساب؟ <a href="register.html" style="color:#2563eb">إنشاء حساب</a></p></section></main><script>
-const TF={
- get(k,f=[]){try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}},
- set(k,v){localStorage.setItem(k,JSON.stringify(v))},
- users(){return this.get('tf_users',[])}, tasks(){return this.get('tf_tasks',[])}, reports(){return this.get('tf_reports',[])}, invites(){return this.get('tf_invites',[])},
- session(){const id=localStorage.getItem('tf_session');return this.users().find(u=>u.id===id)||null},
- id(p='id'){return p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,7)},
- esc(s=''){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))},
- date(s){if(!s)return '-';return new Date(s+'T00:00:00').toLocaleDateString('ar-SA',{year:'numeric',month:'long',day:'numeric'})},
- logout(){localStorage.removeItem('tf_session');location.href='login.html'},
- require(role){const u=this.session();if(!u){location.href='login.html';return null}if(role&&u.role!==role){location.href=u.role==='supervisor'?'supervisor-dashboard.html':'trainee-dashboard.html';return null}return u}
-};
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 
-let role='trainee';const t=document.getElementById('traineeBtn'),s=document.getElementById('supervisorBtn');function setRole(r){role=r;t.classList.toggle('active',r==='trainee');s.classList.toggle('active',r==='supervisor')}t.onclick=()=>setRole('trainee');s.onclick=()=>setRole('supervisor');document.getElementById('form').onsubmit=e=>{e.preventDefault();const email=document.getElementById('email').value.trim().toLowerCase(),password=document.getElementById('password').value,msg=document.getElementById('msg');const u=TF.users().find(x=>x.email===email&&x.password===password);if(!u){msg.className='message error';msg.textContent='البريد الإلكتروني أو كلمة المرور غير صحيحة';return}if(u.role!==role){msg.className='message error';msg.textContent='نوع الحساب المختار لا يطابق هذا الحساب';return}TF.set('tf_session',u.id);location.href=u.role==='supervisor'?'supervisor-dashboard.html':'trainee-dashboard.html'}</script></body></html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TrainFlow | تسجيل الدخول</title>
+
+    <link rel="stylesheet" href="login.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    >
+</head>
+
+<body>
+
+    <main class="auth-page">
+
+        <section class="auth-card">
+
+            <a href="index.html" class="back-button">
+                <i class="fa-solid fa-arrow-right"></i>
+                الرجوع
+            </a>
+
+
+            <div class="auth-header">
+
+                <div class="brand-icon">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+
+                <span>TrainFlow</span>
+
+                <h1>تسجيل الدخول</h1>
+
+                <p>
+                    اختر نوع الحساب ثم أدخل بيانات الدخول.
+                </p>
+
+            </div>
+
+
+            <div class="role-selector">
+
+                <button
+                    type="button"
+                    class="role-button active"
+                    id="supervisorButton"
+                >
+                    <i class="fa-solid fa-user-tie"></i>
+                    مشرف
+                </button>
+
+
+                <button
+                    type="button"
+                    class="role-button"
+                    id="traineeButton"
+                >
+                    <i class="fa-solid fa-user-graduate"></i>
+                    متدرب
+                </button>
+
+            </div>
+
+
+            <form id="loginForm">
+
+                <div class="form-group">
+
+                    <label for="email">
+                        البريد الإلكتروني
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <i class="fa-regular fa-envelope"></i>
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="example@email.com"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group" id="passwordGroup">
+
+                    <label for="password">
+                        كلمة المرور
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="أدخل كلمة المرور"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="form-group"
+                    id="traineeCodeGroup"
+                    style="display: none;"
+                >
+
+                    <label for="traineeCode">
+                        كود الدخول
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <i class="fa-solid fa-key"></i>
+
+                        <input
+                            type="text"
+                            id="traineeCode"
+                            placeholder="أدخل الكود الذي أعطاك المشرف"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <p id="message"></p>
+
+
+                <button
+                    type="submit"
+                    class="submit-button"
+                >
+                    تسجيل الدخول
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+
+            </form>
+
+
+            <div
+                class="register-link"
+                id="registerSection"
+            >
+
+                <span>
+                    مشرف جديد؟
+                </span>
+
+                <a href="register.html">
+                    إنشاء حساب مشرف
+                </a>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script>
+
+        const supervisorButton =
+            document.getElementById("supervisorButton");
+
+        const traineeButton =
+            document.getElementById("traineeButton");
+
+        const passwordGroup =
+            document.getElementById("passwordGroup");
+
+        const traineeCodeGroup =
+            document.getElementById("traineeCodeGroup");
+
+        const passwordInput =
+            document.getElementById("password");
+
+        const traineeCodeInput =
+            document.getElementById("traineeCode");
+
+        const registerSection =
+            document.getElementById("registerSection");
+
+        const loginForm =
+            document.getElementById("loginForm");
+
+        const message =
+            document.getElementById("message");
+
+
+        let selectedRole = "supervisor";
+
+
+        supervisorButton.addEventListener("click", function () {
+
+            selectedRole = "supervisor";
+
+            supervisorButton.classList.add("active");
+            traineeButton.classList.remove("active");
+
+            passwordGroup.style.display = "block";
+            traineeCodeGroup.style.display = "none";
+
+            registerSection.style.display = "block";
+
+            passwordInput.required = true;
+            traineeCodeInput.required = false;
+
+            message.innerText = "";
+
+        });
+
+
+        traineeButton.addEventListener("click", function () {
+
+            selectedRole = "trainee";
+
+            traineeButton.classList.add("active");
+            supervisorButton.classList.remove("active");
+
+            passwordGroup.style.display = "none";
+            traineeCodeGroup.style.display = "block";
+
+            registerSection.style.display = "none";
+
+            passwordInput.required = false;
+            traineeCodeInput.required = true;
+
+            message.innerText = "";
+
+        });
+
+
+        loginForm.addEventListener("submit", function (event) {
+
+            event.preventDefault();
+
+
+            const email =
+                document
+                    .getElementById("email")
+                    .value
+                    .trim()
+                    .toLowerCase();
+
+
+            if (selectedRole === "supervisor") {
+
+                loginSupervisor(email);
+
+            } else {
+
+                loginTrainee(email);
+
+            }
+
+        });
+
+
+        function loginSupervisor(email) {
+
+            const password =
+                passwordInput.value;
+
+
+            const supervisors =
+                JSON.parse(
+                    localStorage.getItem("trainflow_supervisors")
+                ) || [];
+
+
+            const supervisor =
+                supervisors.find(function (item) {
+
+                    return (
+                        item.email.toLowerCase() === email &&
+                        item.password === password
+                    );
+
+                });
+
+
+            if (!supervisor) {
+
+                showError(
+                    "البريد الإلكتروني أو كلمة المرور غير صحيحة"
+                );
+
+                return;
+
+            }
+
+
+            localStorage.setItem(
+                "trainflow_current_user",
+                JSON.stringify({
+                    id: supervisor.id,
+                    name: supervisor.name,
+                    email: supervisor.email,
+                    role: "supervisor"
+                })
+            );
+
+
+            window.location.href =
+                "supervisor-dashboard.html";
+
+        }
+
+
+        function loginTrainee(email) {
+
+            const code =
+                traineeCodeInput.value.trim();
+
+
+            const trainees =
+                JSON.parse(
+                    localStorage.getItem("trainflow_trainees")
+                ) || [];
+
+
+            const trainee =
+                trainees.find(function (item) {
+
+                    return (
+                        item.email.toLowerCase() === email &&
+                        item.loginCode === code
+                    );
+
+                });
+
+
+            if (!trainee) {
+
+                showError(
+                    "البريد الإلكتروني أو كود الدخول غير صحيح"
+                );
+
+                return;
+
+            }
+
+
+            localStorage.setItem(
+                "trainflow_current_user",
+                JSON.stringify({
+                    id: trainee.id,
+                    name: trainee.name,
+                    email: trainee.email,
+                    role: "trainee",
+                    supervisorId: trainee.supervisorId
+                })
+            );
+
+
+            window.location.href =
+                "trainee-dashboard.html";
+
+        }
+
+
+        function showError(text) {
+
+            message.className = "error-message";
+            message.innerText = text;
+
+        }
+
+    </script>
+
+</body>
+
+</html>
