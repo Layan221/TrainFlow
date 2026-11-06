@@ -3,7 +3,7 @@
 :root[data-theme=dark]{--bg-primary:#0f172a;--bg-secondary:#111827;--card-bg:#182235;--text-primary:#f8fafc;--text-secondary:#b3bfd0;--border-color:#36445a;--soft-bg:#282747;--accent-text:#c4b5fd;--success-bg:#18392d;--success-text:#93e7b4;--warning-bg:#3b3020;--warning-text:#f4d38a;--error-bg:#402633;--error-text:#ffb4c3;--theme-shadow:0 10px 30px #03071255}
 :root.text-large{--text-scale:1.12}
 html[data-theme],html[data-theme] body{background:var(--bg-primary);color:var(--text-primary)}
-html[data-theme] :is(.sidebar,.mobile-topbar,.header,.top-header,.form-section){background:var(--card-bg);border-color:var(--border-color);color:var(--text-primary)}
+html[data-theme] :is(.sidebar,.mobile-topbar,.form-section){background:var(--card-bg);border-color:var(--border-color);color:var(--text-primary)}
 html[data-theme] :is(.card,.login-card,.register-card,.preview,.preview-card,.appearance-panel,.home-button,.icon-button,.ghost-btn,.list-item){background:var(--card-bg);color:var(--text-primary);border-color:var(--border-color);box-shadow:none}
 html[data-theme] :is(.account-type,.office-control,.trainee-table-head,.preview-item,.supervisor-status,.status,.input:disabled,.lines span,.trainee-lines span){background:var(--bg-secondary);border-color:var(--border-color)}
 html[data-theme] :is(h1,h2,h3,.brand,.logo,.brand-text strong,.logo-text strong,.feature strong,.feature-text strong,.preview-header strong,.preview-item strong,.stat strong,.supervisor-status strong,.status-text strong,.trainee-identity h3){color:var(--text-primary)}
@@ -85,3 +85,16 @@ a.page-back svg{width:20px;height:20px;flex-shrink:0}
 a.page-back:hover{background:var(--soft-bg,#eef2ff);color:var(--accent-text,#5145b9)}
 a.page-back:focus-visible{outline:3px solid var(--accent-text,#5145b9);outline-offset:3px}
 .header>.page-back-row{max-width:1200px;margin:0 auto 12px;padding-inline:24px}
+
+/* Keep the public account pages compact without shrinking the controls. */
+.public-page .top-header { min-height: 68px; padding-block: 10px; }
+.public-page .top-header ~ .page-container { margin-block: 12px 40px; align-items: start; }
+.public-page .top-header ~ .page-container .info-badge { margin-bottom: 12px; }
+.public-page .top-header ~ .page-container .info-section h2 {
+  font-size: clamp(32px, 4vw, 54px);
+  line-height: 1.25;
+}
+.public-page .top-header ~ .page-container .form-message:empty { display: none; }
+@media (max-width: 820px) {
+  .public-page .top-header ~ .page-container { align-items: center; gap: 24px; }
+}
