@@ -115,7 +115,11 @@
         if (users.some(u => String(u.email).toLowerCase() === email)) return message('هذا البريد مسجّل بالفعل.',false,'formMessage');
         if (password.length < 6 || password !== $('confirmPassword').value) return message('استخدم 6 خانات على الأقل وتأكد من تطابق كلمتي المرور.',false,'formMessage');
         const code = value('organizationCode');
-        if (TF.cloud) { await TF.registerSupervisor({name,email,password,organizationCode:code}); return message('تم إنشاء الحساب. تحقق من بريدك لتأكيد الحساب ثم سجّل الدخول.',true,'formMessage'); }
+        if (TF.cloud) {
+          const result = await TF.registerSupervisor({name,email,password,organizationCode:code});
+          const notice = result.welcomeEmailSent === false ? ' تعذّر إرسال رسالة الترحيب.' : '';
+          return message('تم إنشاء الحساب. يمكنك تسجيل الدخول الآن.' + notice,true,'formMessage');
+        }
         if (code !== '5566') return message('كود اعتماد المشرف غير صحيح.',false,'formMessage');
         const user = {id:TF.id(role),name,email,role,password,createdAt:new Date().toISOString()};
         users.push(user); await TF.write('tf_users',users); TF.login(user);
