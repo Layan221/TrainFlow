@@ -38,7 +38,14 @@
     if (currentId) await refresh();
   };
   TF.signIn = async (email,password,role) => {
-    const {user} = check(await client.auth.signInWithPassword({email,password}));
+    const result = await client.auth.signInWithPassword({email,password});
+    if (result.error?.code === 'email_not_confirmed') {
+      throw new Error('أكد بريدك من رسالة تأكيد الحساب ثم حاول تسجيل الدخول.');
+    }
+    if (result.error?.code === 'invalid_credentials') {
+      throw new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة. إذا لم تنشئ حسابًا بعد، سجّل أولًا.');
+    }
+    const {user} = check(result);
     currentId = user.id;
     await refresh();
     const profile = TF.session();
@@ -57,6 +64,13 @@
     if (!recovery) throw new Error('افتح رابط الاستعادة المرسل إلى بريدك. إذا انتهت صلاحيته، اطلب رابطًا جديدًا.');
     check(await client.auth.updateUser({password}));
     check(await client.auth.signOut()); recovery = false;
+  };
+  TF.setOfficePresence = async (id, available) => {
+    const profile = cache.tf_users.find(user => user.id === id && user.role === 'supervisor');
+    if (!profile || id !== currentId) throw new Error('لا يمكن تحديث حالة المكتب لهذا الحساب.');
+    check(await client.from('profiles').update({available}).eq('id', id));
+    const updated = cache.tf_users.find(user => user.id === id);
+    if (updated) updated.available = available;
   };
   TF.write = async (key,rows) => {
     const table = tables[key];

@@ -180,17 +180,39 @@
     account.className = 'pill account-name';
     if (u.role === 'supervisor') {
       document.querySelector('.side-bottom').insertAdjacentHTML('afterbegin','<div class="office-control"><span class="office-control-title">حالة المكتب</span><label class="office-control-row" for="presence"><span>في المكتب</span><input id="presence" type="checkbox" aria-label="في المكتب"></label></div>');
-      $('presence').onclick = guard(async () => {
-        const users = TF.users(), current = users.find(x => x.id === u.id);
-        current.available = !current.available; try { await TF.write('tf_users',users); } finally { renderOffice(); }
-      });
+      const presence = $('presence');
+      presence.onchange = async () => {
+        if (presence.disabled) return;
+        const available = presence.checked;
+        presence.disabled = true;
+        const feedback = $('appMessage');
+        feedback.className = 'message';
+        feedback.textContent = 'جارٍ حفظ حالة المكتب…';
+        try {
+          if (TF.cloud) {
+            await TF.setOfficePresence(u.id, available);
+          } else {
+            const users = TF.users();
+            const current = users.find(user => user.id === u.id);
+            if (!current) throw new Error();
+            current.available = available;
+            await TF.write('tf_users', users);
+          }
+          message('تم حفظ حالة المكتب.', true, 'appMessage');
+        } catch {
+          message('تعذّر حفظ حالة المكتب. حاولي مرة ثانية.', false, 'appMessage');
+        } finally {
+          presence.disabled = false;
+          renderOffice();
+        }
+      };
     } else {
       document.querySelector('.dash-head').insertAdjacentHTML('afterend','<div class="supervisor-line" id="supervisorLine"><span class="muted">المشرف</span><strong id="linkedSupervisor"></strong><span class="office-status" id="officeStatus" hidden><span class="office-dot" aria-hidden="true"></span>في المكتب</span></div>');
     }
     function renderOffice() {
       if (u.role === 'supervisor') {
         const current = TF.users().find(x => x.id === u.id);
-        $('presence').checked = !!current?.available;
+        if (!$('presence').disabled) $('presence').checked = !!current?.available;
       } else {
         const supervisor = TF.users().find(x => x.id === u.supervisorId);
         $('linkedSupervisor').textContent = supervisor?.name || 'غير محدد';
