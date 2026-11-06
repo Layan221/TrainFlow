@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <script src="theme.js"></script>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>TrainFlow | إنشاء حساب مشرف</title>
+
+    <link
+        rel="stylesheet"
+        href="register.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    >
+<link rel="stylesheet" href="auth-fixes.css"><link rel="stylesheet" href="theme.css">
+</head>
+
+
+<body>
+
+    
+    <div class="circle-one"></div>
+    <div class="circle-two"></div>
+
+
+    
+
+    <header class="top-header">
+
+        <a href="index.html" class="brand">
+
+            <div class="brand-icon">
+                <i class="fa-solid fa-layer-group"></i>
+            </div>
+
+            <div class="brand-text">
+
+                <strong>
+                    TrainFlow
+                </strong>
+
+                <span>
+                    متابعة التدريب
+                </span>
+
+            </div>
+
+        </a>
+
+
+        
+
+    </header>
+
+
+    
+
+    <main class="page-container">
+
+
+        
+
+        <section class="register-card">
+
+
+            <div class="form-header">
+
+                <div class="form-icon">
+
+                    <i class="fa-solid fa-user-tie"></i>
+
+                </div>
+
+
+                <span class="welcome">
+
+                    أهلاً بك في TrainFlow
+
+                </span>
+
+
+                <h1>
+                    إنشاء حساب مشرف
+                </h1>
+
+
+                <p>
+                    أدخل بياناتك لإنشاء حساب المشرف
+                    للبدء بمتابعة التدريب.
+                </p>
+
+            </div>
+
+
+            
+
+            <form id="registerForm">
+
+
+                
+
+                <div class="form-group">
+
+                    <label for="fullName">
+                        الاسم الكامل
+                    </label>
+
+
+                    <div class="input-box">
+
+                        <i
+                            class="fa-regular fa-user input-icon"
+                        ></i>
+
+                        <input
+                            type="text"
+                            id="fullName"
+                            placeholder="أدخل اسمك الكامل"
+                            autocomplete="name"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                
+
+                <div class="form-group">
+
+                    <label for="email">
+                        البريد الإلكتروني
+                    </label>
+
+
+                    <div class="input-box">
+
+                        <i
+                            class="fa-regular fa-envelope input-icon"
+                        ></i>
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="name@example.com"
+                            autocomplete="email"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                
+
+                <div class="form-group">
+
+                    <label for="organizationCode">
+                        كود المنشأة
+                    </label>
+
+
+                    <div class="input-box">
+
+                        <i
+                            class="fa-solid fa-building input-icon"
+                        ></i>
+
+                        <input
+                            type="password"
+                            id="organizationCode"
+                            placeholder="أدخل كود المنشأة"
+                            autocomplete="off"
+                            required
+                        >
+
+                    </div>
+
+
+                    <small class="help-text">
+
+                        يستخدم للتحقق من صلاحية
+                        إنشاء حساب المشرف.
+
+                    </small>
+
+                </div>
+
+
+                
+
+                <div class="form-group">
+
+                    <label for="password">
+                        كلمة المرور
+                    </label>
+
+
+                    <div class="input-box">
+
+                        <i
+                            class="fa-solid fa-lock input-icon"
+                        ></i>
+
+
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="أنشئ كلمة مرور"
+                            autocomplete="new-password"
+                            required
+                        >
+
+
+                        <button
+                            type="button"
+                            class="show-password"
+                            id="showPassword"
+                            aria-label="إظهار كلمة المرور"
+                        >
+
+                            <i class="fa-regular fa-eye"></i>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                
+
+                <div class="form-group">
+
+                    <label for="confirmPassword">
+                        تأكيد كلمة المرور
+                    </label>
+
+
+                    <div class="input-box">
+
+                        <i
+                            class="fa-solid fa-shield-halved input-icon"
+                        ></i>
+
+
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            placeholder="أعد كتابة كلمة المرور"
+                            autocomplete="new-password"
+                            required
+                        >
+
+
+                        <button
+                            type="button"
+                            class="show-password"
+                            id="showConfirmPassword"
+                            aria-label="إظهار تأكيد كلمة المرور"
+                        >
+
+                            <i class="fa-regular fa-eye"></i>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                
+
+                <div
+                    id="formMessage"
+                    class="form-message" role="status" aria-live="polite"
+                ></div>
+
+
+                
+
+                <button
+                    type="submit"
+                    class="register-button"
+                    id="registerButton"
+                >
+
+                    <span id="registerButtonText">
+                        إنشاء حساب المشرف
+                    </span>
+
+                    <i class="fa-solid fa-arrow-left"></i>
+
+                </button>
+
+            </form>
+
+
+            
+
+            <div class="login-area">
+
+                <span>
+                    لديك حساب بالفعل؟
+                </span>
+
+                <a href="login.html">
+                    تسجيل الدخول
+                </a>
+
+            </div>
+
+        </section>
+
+
+
+        
+
+        <section class="info-section">
+
+
+            <div class="info-badge">
+
+                منصة تنظيم ومتابعة التدريب
+
+            </div>
+
+
+            <h2>
+
+                متابعة التدريب
+
+                <strong>
+                    بشكل أبسط.
+                </strong>
+
+            </h2>
+
+
+            <p class="description">
+
+                مساحة واحدة تجمع المشرف والمتدرب
+                لمتابعة المهام والتقارير اليومية
+                وحالة التدريب بطريقة واضحة ومنظمة.
+
+            </p>
+
+
+            
+
+            
+
+
+
+            
+
+            <div class="preview">
+
+
+                <div class="preview-header">
+
+
+                    <div>
+
+                        <span>
+                            لوحة التدريب
+                        </span>
+
+                        <strong>
+                            متابعة منظمة وواضحة
+                        </strong>
+
+                    </div>
+
+
+                    <div class="preview-logo">
+
+                        <i class="fa-solid fa-layer-group"></i>
+
+                    </div>
+
+                </div>
+
+
+                
+
+                <div class="status">
+
+
+                    <div class="status-text">
+
+                        <span>
+                            حالة المشرف
+                        </span>
+
+                        <strong>
+                            موجود في المكتب
+                        </strong>
+
+                    </div>
+
+
+                    <div class="status-circle">
+
+                        <div class="status-dot"></div>
+
+                    </div>
+
+                </div>
+
+
+                
+
+                <div class="preview-items">
+
+
+                    <div class="preview-item">
+
+                        <div class="preview-item-icon blue">
+
+                            <i class="fa-solid fa-list-check"></i>
+
+                        </div>
+
+                        <span>
+                            المهام
+                        </span>
+
+                    </div>
+
+
+                    <div class="preview-item">
+
+                        <div class="preview-item-icon purple">
+
+                            <i class="fa-regular fa-file-lines"></i>
+
+                        </div>
+
+                        <span>
+                            التقرير اليومي
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    
+
+    <script src="app-data.js"></script><script src="vendor/supabase.js" defer></script><script src="supabase-config.js" defer></script><script src="supabase-data.js" defer></script><script src="app.js" defer></script>
+
+</body>
+
+</html>
+
+
+

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <script src="theme.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TrainFlow | تسجيل الدخول</title>
+
+    <link rel="stylesheet" href="login.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    >
+<link rel="stylesheet" href="auth-fixes.css"><link rel="stylesheet" href="theme.css">
+</head>
+
+<body>
+
+    <div class="circle-one"></div>
+    <div class="circle-two"></div>
+
+    
+
+    <header class="top-header">
+
+        <a href="index.html" class="brand">
+
+            <div class="brand-icon">
+                <i class="fa-solid fa-layer-group"></i>
+            </div>
+
+            <div class="brand-text">
+                <strong>TrainFlow</strong>
+                <span>متابعة التدريب</span>
+            </div>
+
+        </a>
+
+        
+
+    </header>
+
+
+    
+
+    <main class="page-container">
+
+
+        
+
+        <section class="login-card">
+
+            <div class="form-header">
+
+                <div class="form-icon">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                </div>
+
+                <span class="welcome">
+                    أهلاً بعودتك
+                </span>
+
+                <h1>تسجيل الدخول</h1>
+
+                <p>
+                    اختر نوع الحساب ثم أدخل بيانات الدخول.
+                </p>
+
+            </div>
+
+
+            
+
+            <div class="account-type">
+
+                <button
+                    type="button"
+                    class="type-button active"
+                    id="supervisorType"
+                >
+                    <i class="fa-solid fa-user-tie"></i>
+                    <span>مشرف</span>
+                </button>
+
+
+                <button
+                    type="button"
+                    class="type-button"
+                    id="traineeType"
+                >
+                    <i class="fa-solid fa-user-graduate"></i>
+                    <span>متدرب</span>
+                </button>
+
+            </div>
+
+
+            
+
+            <form id="loginForm" novalidate>
+
+
+                
+
+                <div class="form-group">
+
+                    <label for="email">
+                        البريد الإلكتروني
+                    </label>
+
+                    <div class="input-box">
+
+                        <i class="fa-regular fa-envelope input-icon"></i>
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="name@example.com"
+                            autocomplete="email"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                
+
+                <div
+                    class="form-group"
+                    id="passwordGroup"
+                >
+
+                    <label for="password">
+                        كلمة المرور
+                    </label>
+
+                    <div class="input-box">
+
+                        <i class="fa-solid fa-lock input-icon"></i>
+
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="أدخل كلمة المرور"
+                            autocomplete="current-password"
+                        >
+
+                        <button
+                            type="button"
+                            class="show-password"
+                            id="showPassword"
+                            aria-label="إظهار كلمة المرور"
+                        >
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+
+                    </div>
+
+
+                    <div class="forgot-area">
+                        <a href="forgot-password.html">
+                            نسيت كلمة المرور؟
+                        </a>
+                    </div>
+
+                </div>
+
+
+                <p class="help-text" id="traineeHelp" hidden>أدخل بريدك وكلمة المرور التي خصصها لك المشرف. لإنشاء حساب مشرف أو استعادة كلمة المرور تواصل مع مشرفك.</p>
+
+
+                <div
+                    id="loginMessage"
+                    class="form-message" role="status" aria-live="polite"
+                ></div>
+
+
+                
+
+                <button
+                    type="submit"
+                    class="login-button"
+                    id="loginButton"
+                >
+
+                    <span id="loginButtonText">
+                        تسجيل الدخول
+                    </span>
+
+                    <i class="fa-solid fa-arrow-left"></i>
+
+                </button>
+
+            </form>
+
+
+            
+
+            <div
+                class="register-area"
+                id="registerArea"
+            >
+
+                <span>
+                    ليس لديك حساب مشرف؟
+                </span>
+
+                <a href="register.html">
+                    إنشاء حساب مشرف
+                </a>
+
+            </div>
+
+        </section>
+
+
+        
+
+        <section class="info-section">
+
+            <div class="info-badge">
+                منصة تنظيم ومتابعة التدريب
+            </div>
+
+            <h2>
+                كل تفاصيل تدريبك
+                <strong>في مكان واحد.</strong>
+            </h2>
+
+            <p class="description">
+                يساعد TrainFlow المشرف والمتدرب على متابعة المهام
+                والتقارير اليومية وحالة التدريب بطريقة واضحة ومنظمة.
+            </p>
+
+
+            
+
+
+            
+
+            <div class="preview">
+
+                <div class="preview-header">
+
+                    <div>
+                        <span>TrainFlow</span>
+                        <strong>متابعة التدريب</strong>
+                    </div>
+
+                    <div class="preview-logo">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+
+                </div>
+
+
+                <div class="status">
+
+                    <div class="status-text">
+                        <span>حالة المشرف</span>
+                        <strong>موجود في المكتب</strong>
+                    </div>
+
+                    <div class="status-circle">
+                        <div class="status-dot"></div>
+                    </div>
+
+                </div>
+
+
+                <div class="preview-items">
+
+                    <div class="preview-item">
+
+                        <div class="preview-item-icon blue">
+                            <i class="fa-solid fa-list-check"></i>
+                        </div>
+
+                        <div>
+                            <strong>المهام</strong>
+                            <span>تابع مهامك</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="preview-item">
+
+                        <div class="preview-item-icon purple">
+                            <i class="fa-regular fa-file-lines"></i>
+                        </div>
+
+                        <div>
+                            <strong>التقارير</strong>
+                            <span>سجل يومك التدريبي</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+<script src="app-data.js"></script><script src="vendor/supabase.js" defer></script><script src="supabase-config.js" defer></script><script src="supabase-data.js" defer></script><script src="app.js" defer></script>
+
+</body>
+</html>
+
+

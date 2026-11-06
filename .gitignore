@@ -1,0 +1,16 @@
+# Generated output and browser test artifacts
+node_modules/
+dist/
+verification/
+*.log
+
+# Local secrets and machine settings
+.env
+.env.*
+!.env.example
+supabase/.temp/
+supabase/.branches/
+.vscode/
+.DS_Store
+Thumbs.db
+*.zip
