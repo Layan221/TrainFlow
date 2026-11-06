@@ -7,7 +7,18 @@
   if (!config.url && !config.publishableKey && !config.requireCloud) return;
   TF.init = async () => { throw new Error('إعدادات الاتصال غير مكتملة. يرجى التواصل مع مسؤول النظام.'); };
   if (!config.url || !config.publishableKey) return;
-  const client = window.supabase.createClient(config.url,config.publishableKey);
+  // Keep the session and Supabase auth broadcasts scoped to this tab.
+  const storage = window.sessionStorage;
+  const project = new URL(config.url).host;
+  const tabIdKey = `trainflow-auth-tab:${project}`;
+  let tabId = storage.getItem(tabIdKey);
+  if (!tabId) {
+    tabId = crypto.randomUUID();
+    storage.setItem(tabIdKey, tabId);
+  }
+  const client = window.supabase.createClient(config.url,config.publishableKey,{
+    auth:{storage,storageKey:`${tabIdKey}:${tabId}`}
+  });
   const tables = {tf_users:'profiles',tf_tasks:'tasks',tf_reports:'reports'};
   const columns = {
     profiles:['id','name','email','role','supervisorId','trainingField','bio','available','createdAt'],
@@ -21,8 +32,7 @@
     cache = Object.fromEntries(entries);
   };
   const action = async body => check(await client.functions.invoke('manage-accounts',{body}));
-  client.auth.onAuthStateChange((event,session) => {
-    currentId = session?.user?.id || null;
+  client.auth.onAuthStateChange(event => {
     if (event === 'PASSWORD_RECOVERY') recovery = true;
   });
   TF.cloud = true;
@@ -50,12 +60,12 @@
     await refresh();
     const profile = TF.session();
     if (!profile || profile.role !== role) {
-      await client.auth.signOut(); currentId = null;
+      await client.auth.signOut({scope:'local'}); currentId = null;
       throw new Error('الحساب غير متاح لنوع الدخول المحدد.');
     }
     location.href = TF.home(profile);
   };
-  TF.logout = async () => { check(await client.auth.signOut()); location.href = 'login.html'; };
+  TF.logout = async () => { check(await client.auth.signOut({scope:'local'})); currentId = null; location.href = 'login.html'; };
   TF.registerSupervisor = details => action({action:'register-supervisor',...details});
   TF.sendReset = async email => {
     check(await client.auth.resetPasswordForEmail(email,{redirectTo:new URL('reset-password.html',location.href).href}));
@@ -63,7 +73,7 @@
   TF.finishReset = async password => {
     if (!recovery) throw new Error('افتح رابط الاستعادة المرسل إلى بريدك. إذا انتهت صلاحيته، اطلب رابطًا جديدًا.');
     check(await client.auth.updateUser({password}));
-    check(await client.auth.signOut()); recovery = false;
+    check(await client.auth.signOut({scope:'local'})); recovery = false;
   };
   TF.setOfficePresence = async (id, available) => {
     const profile = cache.tf_users.find(user => user.id === id && user.role === 'supervisor');
