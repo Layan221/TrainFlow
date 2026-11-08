@@ -98,6 +98,15 @@
     if (updated) updated.available = available;
     saveCache();
   };
+  TF.deleteReport = async id => {
+    const profile = TF.session();
+    const report = cache.tf_reports.find(item => item.id === id);
+    if (profile?.role !== 'trainee' || report?.traineeId !== currentId) throw new Error('لا يمكنك حذف هذا التقرير.');
+    const deleted = check(await client.from('reports').delete().eq('id',id).eq('traineeId',currentId).select('id'));
+    if (!deleted?.length) throw new Error('تعذّر حذف التقرير. حدّث الصفحة وحاول مجددًا.');
+    cache.tf_reports = cache.tf_reports.filter(item => item.id !== id);
+    saveCache();
+  };
   TF.deleteTask = async id => {
     const profile = TF.session();
     const task = cache.tf_tasks.find(item => item.id === id);

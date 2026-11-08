@@ -258,8 +258,29 @@
       if (!r || !(u.role === 'trainee' ? r.traineeId === u.id : TF.myTrainees(u).some(t => t.id === r.traineeId))) return;
       const trainee = TF.users().find(x => x.id === r.traineeId);
       const sections = [['work','الأعمال المنجزة'],['learned','ما تعلمته'],['challenges','التحديات'],['plan','خطة اليوم التالي']].filter(([key]) => r[key]);
-      reportDialog.innerHTML = `<div class="report-dialog-panel"><header class="report-dialog-heading"><div><h2 id="reportDialogTitle">التقرير اليومي</h2><p>${e(trainee?.name || 'المتدرب')} · ${TF.date(r.date)}</p></div><button class="ghost-btn" type="button" autofocus aria-label="إغلاق التقرير">إغلاق ×</button></header><div class="report-dialog-content">${sections.map(([key,label]) => `<section><h3>${label}</h3><p class="pre">${e(r[key])}</p></section>`).join('')}${u.role === 'trainee' ? `<a class="btn" href="daily-report.html?date=${encodeURIComponent(r.date)}">تعديل التقرير</a>` : ''}</div></div>`;
+      reportDialog.innerHTML = `<div class="report-dialog-panel"><header class="report-dialog-heading"><div><h2 id="reportDialogTitle">التقرير اليومي</h2><p>${e(trainee?.name || 'المتدرب')} · ${TF.date(r.date)}</p></div><button class="ghost-btn" type="button" autofocus aria-label="إغلاق التقرير">إغلاق ×</button></header><div class="report-dialog-content">${sections.map(([key,label]) => `<section><h3>${label}</h3><p class="pre">${e(r[key])}</p></section>`).join('')}${u.role === 'trainee' ? `<a class="btn" href="daily-report.html?date=${encodeURIComponent(r.date)}">تعديل التقرير</a><button type="button" class="ghost-btn task-delete-btn" id="deleteReport">حذف التقرير</button>` : ''}</div></div>`;
       reportDialog.querySelector('button').onclick = () => reportDialog.close();
+      const deleteReport = reportDialog.querySelector('#deleteReport');
+      if (deleteReport) deleteReport.onclick = async () => {
+        if (!confirm('هل تريد حذف هذا التقرير نهائيًا؟')) return;
+        deleteReport.disabled = true;
+        try {
+          if (TF.cloud) await TF.deleteReport(r.id);
+          else await TF.write('tf_reports',TF.reports().filter(item => item.id !== r.id));
+          body.querySelectorAll('[data-report-id]').forEach(item => { if (item.dataset.reportId === r.id) item.remove(); });
+          const count = $('reportCount');
+          if (count) count.textContent = `عدد التقارير: ${body.querySelectorAll('[data-report-id]').length}`;
+          const scroll = body.querySelector('.report-scroll');
+          if (scroll && !scroll.querySelector('[data-report-id]')) scroll.innerHTML = '<div class="reports-empty"><h3>لا توجد تقارير مطابقة</h3></div>';
+          reportDialog.close();
+          message('تم حذف التقرير بنجاح.',true,'appMessage');
+        } catch (error) {
+          let notice = reportDialog.querySelector('.report-delete-error');
+          if (!notice) { notice = document.createElement('p'); notice.className = 'message error report-delete-error'; notice.setAttribute('role','alert'); deleteReport.after(notice); }
+          notice.textContent = error.message;
+        } finally { deleteReport.disabled = false; }
+      };
+
       reportDialog.showModal();
     });
     const taskList = rows => rows.length ? rows.map(t => `<a class="task-row" href="task-details.html?id=${encodeURIComponent(t.id)}"><div class="list-main"><h3>${e(t.title)}</h3><p>${u.role === 'supervisor' ? `${e(TF.users().find(x => x.id === t.traineeId)?.name || '')} · ` : ''}${t.dueDate ? `التسليم: ${TF.date(t.dueDate)}` : 'دون موعد محدد'}</p></div><span class="badge ${status(t)}">${labels[status(t)]}</span><span class="row-arrow" aria-hidden="true">←</span></a>`).join('') : empty('لا توجد مهام مطابقة');
