@@ -26,10 +26,25 @@
     reports:['id','traineeId','supervisorId','date','work','learned','challenges','plan','updatedAt']
   };
   let cache = {tf_users:[],tf_tasks:[],tf_reports:[]}, currentId = null, recovery = false;
+  const cacheKey = `trainflow-data:${project}:${tabId}`;
+  const saveCache = () => {
+    try { storage.setItem(cacheKey, JSON.stringify({userId:currentId, savedAt:Date.now(), data:cache})); } catch {}
+  };
+  const restoreCache = () => {
+    try {
+      const saved = JSON.parse(storage.getItem(cacheKey));
+      if (saved?.userId !== currentId || Date.now() - saved.savedAt > 20000) return false;
+      if (!Object.keys(tables).every(key => Array.isArray(saved.data?.[key]))) return false;
+      if (!saved.data.tf_users.some(user => user.id === currentId)) return false;
+      cache = saved.data;
+      return true;
+    } catch { return false; }
+  };
   const check = result => { if (result.error) throw new Error('تعذّر إتمام العملية. تحقق من الاتصال والبيانات وحاول مجددًا.'); return result.data; };
   const refresh = async () => {
     const entries = await Promise.all(Object.entries(tables).map(async ([key,table]) => [key,check(await client.from(table).select('*'))]));
     cache = Object.fromEntries(entries);
+    saveCache();
   };
   const action = async body => check(await client.functions.invoke('manage-accounts',{body}));
   client.auth.onAuthStateChange(event => {
@@ -45,7 +60,7 @@
   TF.init = async () => {
     const {session} = check(await client.auth.getSession());
     currentId = session?.user?.id || null;
-    if (currentId) await refresh();
+    if (currentId && !restoreCache()) await refresh();
   };
   TF.signIn = async (email,password,role) => {
     const result = await client.auth.signInWithPassword({email,password});
@@ -65,7 +80,7 @@
     }
     location.href = TF.home(profile);
   };
-  TF.logout = async () => { check(await client.auth.signOut({scope:'local'})); currentId = null; location.href = 'login.html'; };
+  TF.logout = async () => { check(await client.auth.signOut({scope:'local'})); currentId = null; storage.removeItem(cacheKey); location.href = 'login.html'; };
   TF.registerSupervisor = details => action({action:'register-supervisor',...details});
   TF.sendReset = async email => {
     check(await client.auth.resetPasswordForEmail(email,{redirectTo:new URL('reset-password.html',location.href).href}));
@@ -81,6 +96,7 @@
     check(await client.from('profiles').update({available}).eq('id', id));
     const updated = cache.tf_users.find(user => user.id === id);
     if (updated) updated.available = available;
+    saveCache();
   };
   TF.write = async (key,rows) => {
     const table = tables[key];
