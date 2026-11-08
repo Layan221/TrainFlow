@@ -5,6 +5,25 @@
   const page = location.pathname.split('/').pop() || 'index.html';
   const params = new URLSearchParams(location.search);
   const message = (text, ok = false, target = 'msg') => { const el = $(target); if (!el) return; clearTimeout(el.dismissTimer); el.textContent = text; el.className = `message ${ok ? 'success' : 'error'}`; if (ok) el.dismissTimer = setTimeout(() => { if (el.textContent === text) { el.textContent = ''; el.className = 'message'; } }, 4500); };
+  const submitted = (formId, text) => {
+    const form = $(formId);
+    form.reset();
+    const oldMessage = form.querySelector('.message');
+    if (oldMessage) { clearTimeout(oldMessage.dismissTimer); oldMessage.textContent = ''; oldMessage.className = 'message'; }
+    let toast = $('submissionNotice');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'submissionNotice';
+      toast.setAttribute('role','status');
+      toast.setAttribute('aria-live','polite');
+      document.body.append(toast);
+    }
+    clearTimeout(toast.dismissTimer);
+    toast.className = 'submission-notice';
+    toast.textContent = `✓ ${text}`;
+    toast.hidden = false;
+    toast.dismissTimer = setTimeout(() => { toast.hidden = true; toast.textContent = ''; }, 4500);
+  };
   const guard = fn => async (...args) => { try { return await fn(...args); } catch (err) { const target = $('msg') || $('formMessage') || $('loginMessage') || $('message') || $('appMessage'); if (target) { target.textContent = err.name === 'QuotaExceededError' ? 'مساحة التخزين ممتلئة. لم يتم حفظ التغيير.' : err.message; target.className = 'message error'; } else throw err; } };
   const form = (id, fn) => { $(id).addEventListener('submit', guard(async event => { event.preventDefault(); const button = event.submitter; if (button) button.disabled = true; try { await fn(); } finally { if (button) button.disabled = false; } })); };
   const value = id => $(id).value.trim();
@@ -252,7 +271,7 @@
         const trainee = TF.myTrainees(u).find(t => t.id === value('trainee'));
         if (!trainee || !value('taskTitle') || !value('description') || !value('dueDate')) return message('اختر متدربًا واكتب عنوان المهمة ووصفها وموعد تسليمها.');
         const all = TF.tasks(); all.push({id:TF.id('task'),supervisorId:u.id,traineeId:trainee.id,title:value('taskTitle'),description:value('description'),dueDate:value('dueDate'),priority:value('priority'),supervisorNotes:value('supervisorNotes'),status:'pending',createdAt:new Date().toISOString()});
-        await TF.write('tf_tasks',all); $('taskForm').reset(); message('تمت إضافة المهمة بنجاح.',true); after();
+        await TF.write('tf_tasks',all); submitted('taskForm','تمت إضافة المهمة وإرسالها للمتدرب.'); after();
       });
     }
     if (page.endsWith('-dashboard.html')) {
@@ -277,7 +296,7 @@
         if (!value('name') || $('code').value.length < 6) return message('أدخل الاسم وكلمة مرور من 6 خانات على الأقل.');
         if (users.some(t => String(t.email).toLowerCase() === email)) return message('البريد مسجّل بالفعل.');
         users.push({id:TF.id('trainee'),role:'trainee',supervisorId:u.id,name:value('name'),email,password:$('code').value,trainingField:value('field'),createdAt:new Date().toISOString()});
-        await TF.write('tf_users',users); $('addForm').reset(); message('تمت إضافة المتدرب وربطه بحسابك.',true);
+        await TF.write('tf_users',users); submitted('addForm','تمت إضافة المتدرب وربطه بحسابك.');
       });
     } else if (['supervisor-tasks.html','trainee-tasks.html'].includes(page)) {
       title(u.role === 'supervisor' ? 'إدارة المهام' : 'مهامي');
@@ -314,7 +333,7 @@
         const report = {id:index >= 0 ? all[index].id : TF.id('report'),traineeId:u.id,supervisorId:u.supervisorId,date:value('date'),updatedAt:new Date().toISOString()};
         ['work','learned','challenges','plan'].forEach(k => report[k] = value(k));
         if (index >= 0) all[index] = report; else all.push(report);
-        await TF.write('tf_reports',all); message('تم إرسال التقرير للمشرف.',true);
+        await TF.write('tf_reports',all); submitted('reportForm','تم إرسال التقرير للمشرف بنجاح.');
       });
     } else if (page === 'reports.html') {
       title(u.role === 'supervisor' ? 'تقارير المتدربين' : 'تقاريري'); const trainees = u.role === 'supervisor' ? TF.myTrainees(u) : [u], ids = new Set(trainees.map(t => t.id));

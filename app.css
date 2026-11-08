@@ -81,3 +81,6 @@ body:has(.report-dialog[open]){overflow:hidden}
 .report-dialog-heading h2{font-size:20px}.report-dialog-heading p{margin-top:6px;color:var(--text-secondary,#64748b);font-size:13px}
 .report-dialog-content{padding:24px}.report-dialog-content section+section{border-top:1px solid var(--border-color,#e7ebf2);margin-top:20px;padding-top:20px}.report-dialog-content h3{font-size:15px;margin-bottom:10px}.report-dialog-content .pre{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.9}.report-dialog-content>.btn{margin-top:24px}
 @media(max-width:600px){.report-item{padding:16px;gap:10px;flex-wrap:wrap}.report-item .report-author{flex-basis:60%;min-width:0}.report-open-label{margin-inline-start:auto}.report-item-preview{max-width:45vw}.report-dialog-heading,.report-dialog-content{padding:18px}}
+
+.submission-notice{position:fixed;inset-block-start:24px;inset-inline-start:50%;transform:translateX(-50%);z-index:1000;max-width:calc(100vw - 32px);width:max-content;padding:16px 24px;border:1px solid #55b68b;border-radius:14px;background:var(--card-bg,#fff);color:var(--text-primary,#1e293b);box-shadow:0 8px 32px #0003;font-weight:600;line-height:1.7;pointer-events:none}
+.submission-notice[hidden]{display:none}
