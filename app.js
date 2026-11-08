@@ -223,11 +223,26 @@
     window.addEventListener('storage',event => { if (event.key === 'tf_users' || event.key === null) renderOffice(); });
     window.addEventListener('focus',renderOffice);
     const tasks = () => TF.myTasks(u);
-    const reportList = rows => rows.length ? rows.map(r => {
+    const reportList = rows => `<div class="report-scroll" tabindex="0" role="region" aria-label="قائمة التقارير">${rows.length ? rows.map(r => {
       const trainee = TF.users().find(x => x.id === r.traineeId);
-      const sections = [['learned','ما تعلمته'],['challenges','التحديات'],['plan','الخطوة القادمة']].filter(([key]) => r[key]);
-      return `<article class="report-entry"><header class="report-entry-header"><div class="report-author"><span class="avatar" aria-hidden="true">${e(trainee?.name?.charAt(0) || 'م')}</span><div><h3>${e(trainee?.name || 'المتدرب')}</h3><p>التقرير اليومي</p></div></div><time class="report-date" datetime="${e(r.date)}">${TF.date(r.date)}</time>${u.role === 'trainee' ? `<a class="row-link" href="daily-report.html?date=${encodeURIComponent(r.date)}">تعديل التقرير</a>` : ''}</header><p class="report-preview">${e(r.work || 'لم تُضف تفاصيل الإنجاز.')}</p><details class="report-details"><summary>عرض تفاصيل التقرير</summary><div class="report-work"><h4>الأعمال المنجزة</h4><p class="pre">${e(r.work || 'لم تُضف تفاصيل الإنجاز.')}</p></div>${sections.length ? `<div class="report-sections">${sections.map(([key,label]) => `<section><h4>${label}</h4><p class="pre">${e(r[key])}</p></section>`).join('')}</div>` : ''}</details></article>`;
-    }).join('') : `<div class="reports-empty"><span class="empty-report-icon" aria-hidden="true">▤</span><h3>لا توجد تقارير مطابقة</h3><p>ستظهر التقارير هنا عند إرسالها. يمكنك تغيير ${u.role === 'supervisor' ? 'المتدرب أو ' : ''}التاريخ لعرض نتائج أخرى.</p></div>`;
+      return `<button type="button" class="report-item" data-report-id="${e(r.id)}" aria-haspopup="dialog"><span class="report-author"><span class="avatar" aria-hidden="true">${e(trainee?.name?.charAt(0) || 'م')}</span><span><strong>${e(trainee?.name || 'المتدرب')}</strong><span class="report-item-preview">${e(r.work || 'التقرير اليومي')}</span></span></span><time class="report-date" datetime="${e(r.date)}">${TF.date(r.date)}</time><span class="report-open-label">عرض التقرير ←</span></button>`;
+    }).join('') : '<div class="reports-empty"><h3>لا توجد تقارير مطابقة</h3><p>ستظهر التقارير هنا عند إرسالها.</p></div>'}</div>`;
+    const reportDialog = document.createElement('dialog');
+    reportDialog.className = 'report-dialog';
+    reportDialog.setAttribute('aria-labelledby','reportDialogTitle');
+    document.body.append(reportDialog);
+    reportDialog.addEventListener('click',event => { if (event.target === reportDialog) reportDialog.close(); });
+    body.addEventListener('click',event => {
+      const button = event.target.closest('[data-report-id]');
+      if (!button) return;
+      const r = TF.reports().find(item => item.id === button.dataset.reportId);
+      if (!r || !(u.role === 'trainee' ? r.traineeId === u.id : TF.myTrainees(u).some(t => t.id === r.traineeId))) return;
+      const trainee = TF.users().find(x => x.id === r.traineeId);
+      const sections = [['work','الأعمال المنجزة'],['learned','ما تعلمته'],['challenges','التحديات'],['plan','خطة اليوم التالي']].filter(([key]) => r[key]);
+      reportDialog.innerHTML = `<div class="report-dialog-panel"><header class="report-dialog-heading"><div><h2 id="reportDialogTitle">التقرير اليومي</h2><p>${e(trainee?.name || 'المتدرب')} · ${TF.date(r.date)}</p></div><button class="ghost-btn" type="button" autofocus aria-label="إغلاق التقرير">إغلاق ×</button></header><div class="report-dialog-content">${sections.map(([key,label]) => `<section><h3>${label}</h3><p class="pre">${e(r[key])}</p></section>`).join('')}${u.role === 'trainee' ? `<a class="btn" href="daily-report.html?date=${encodeURIComponent(r.date)}">تعديل التقرير</a>` : ''}</div></div>`;
+      reportDialog.querySelector('button').onclick = () => reportDialog.close();
+      reportDialog.showModal();
+    });
     const taskList = rows => rows.length ? rows.map(t => `<a class="task-row" href="task-details.html?id=${encodeURIComponent(t.id)}"><div class="list-main"><h3>${e(t.title)}</h3><p>${u.role === 'supervisor' ? `${e(TF.users().find(x => x.id === t.traineeId)?.name || '')} · ` : ''}${t.dueDate ? `التسليم: ${TF.date(t.dueDate)}` : 'دون موعد محدد'}</p></div><span class="badge ${status(t)}">${labels[status(t)]}</span><span class="row-arrow" aria-hidden="true">←</span></a>`).join('') : empty('لا توجد مهام مطابقة');
     function taskForm(trainees, selected = '') {
       return `<section class="card"><h2>إضافة مهمة</h2><form id="taskForm"><div class="form-group"><label for="trainee">المتدرب</label><select class="select" id="trainee" required><option value="">اختر المتدرب</option>${trainees.map(t => `<option value="${e(t.id)}" ${t.id === selected ? 'selected' : ''}>${e(t.name)}</option>`).join('')}</select></div>${field('taskTitle','عنوان المهمة','text','',true)}${area('description','وصف المهمة','',true)}<div class="two-col">${field('dueDate','موعد التسليم','date','',true)}<div class="form-group"><label for="priority">الأولوية</label><select class="select" id="priority"><option value="medium">– متوسطة</option><option value="high">↑ عالية</option><option value="low">↓ منخفضة</option></select></div></div>${area('supervisorNotes','ملاحظات المشرف')}${msg}<button class="btn" type="submit">إضافة المهمة</button></form></section>`;
