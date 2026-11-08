@@ -84,3 +84,5 @@ body:has(.report-dialog[open]){overflow:hidden}
 
 .submission-notice{position:fixed;inset-block-start:24px;inset-inline-start:50%;transform:translateX(-50%);z-index:1000;max-width:calc(100vw - 32px);width:max-content;padding:16px 24px;border:1px solid #55b68b;border-radius:14px;background:var(--card-bg,#fff);color:var(--text-primary,#1e293b);box-shadow:0 8px 32px #0003;font-weight:600;line-height:1.7;pointer-events:none}
 .submission-notice[hidden]{display:none}
+
+.task-delete-btn{color:var(--accent-text,#5145b9);background:var(--soft-bg,#eeedff);border-color:var(--border-color,#dcd8f3)}

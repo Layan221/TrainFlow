@@ -321,7 +321,18 @@
           item.status = value('taskStatus'); item.traineeNotes = value('traineeNotes'); item.completedAt = item.status === 'completed' ? (item.completedAt || new Date().toISOString()) : null;
           await TF.write('tf_tasks',all); $('taskBadge').textContent = labels[item.status]; $('taskBadge').className = `badge ${item.status}`; message('تم تحديث المهمة.',true);
         });
-      } else body.innerHTML += `<section class="card"><h2>ملاحظات المتدرب</h2><p class="pre">${e(t.traineeNotes || 'لم يضف المتدرب ملاحظات بعد')}</p></section>`;
+      } else {
+        body.innerHTML += `<section class="card"><h2>ملاحظات المتدرب</h2><p class="pre">${e(t.traineeNotes || 'لم يضف المتدرب ملاحظات بعد')}</p></section><section class="card"><div class="toolbar"><p class="muted">يمكنك حذف المهمة إذا لم تعد مطلوبة.</p><button class="ghost-btn task-delete-btn" id="deleteTask" type="button">حذف المهمة</button></div></section>`;
+        $('deleteTask').onclick = guard(async () => {
+          if (!confirm('هل تريد حذف هذه المهمة نهائيًا؟')) return;
+          const button = $('deleteTask'); button.disabled = true;
+          try {
+            if (TF.cloud) await TF.deleteTask(t.id);
+            else await TF.write('tf_tasks',TF.tasks().filter(item => item.id !== t.id));
+            body.innerHTML = `<section class="card"><h2>✓ تم حذف المهمة</h2><p class="muted">حُذفت المهمة من قائمتك وقائمة المتدرب.</p><a class="btn" href="supervisor-tasks.html">الرجوع للمهام</a></section>`;
+          } finally { if (button.isConnected) button.disabled = false; }
+        });
+      }
     } else if (page === 'daily-report.html') {
       title('التقرير اليومي'); body.innerHTML = `<section class="card report-editor"><div class="toolbar"><h2>كتابة التقرير</h2><a class="row-link" href="reports.html">سجل التقارير ←</a></div><p class="muted">وثّق أعمالك ثم أرسل التقرير مباشرة للمشرف. يمكنك تعديل تقرير سابق باختيار تاريخه.</p><form id="reportForm">${field('date','تاريخ التقرير','date',TF.today(),true)}${area('work','الأعمال المنجزة','',true)}<div class="report-optional">${area('learned','ما تعلمته (اختياري)')}${area('challenges','التحديات (اختياري)')}${area('plan','خطة اليوم التالي (اختياري)')}</div>${msg}<button class="btn" type="submit">إرسال التقرير</button></form></section>`;
       $('date').value = params.get('date') || TF.today();

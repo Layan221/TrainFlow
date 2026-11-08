@@ -98,6 +98,15 @@
     if (updated) updated.available = available;
     saveCache();
   };
+  TF.deleteTask = async id => {
+    const profile = TF.session();
+    const task = cache.tf_tasks.find(item => item.id === id);
+    if (profile?.role !== 'supervisor' || task?.supervisorId !== currentId) throw new Error('لا يمكنك حذف هذه المهمة.');
+    const deleted = check(await client.from('tasks').delete().eq('id',id).eq('supervisorId',currentId).select('id'));
+    if (!deleted?.length) throw new Error('تعذّر حذف المهمة. حدّث الصفحة وحاول مجددًا.');
+    cache.tf_tasks = cache.tf_tasks.filter(item => item.id !== id);
+    saveCache();
+  };
   TF.write = async (key,rows) => {
     const table = tables[key];
     if (!table) throw new Error('عملية غير مدعومة.');
